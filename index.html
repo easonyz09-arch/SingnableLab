@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOCALAB</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <span class="logo">VOCALAB</span>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="1">✦ Immersive</button>
+      <button class="tab-btn"        data-tab="2">◎ Vocal Zones</button>
+    </div>
+  </div>
+
+  <!-- Microphone controls -->
+  <div class="mic-row">
+    <button id="mic-btn">Start Microphone</button>
+    <button id="stop-btn" style="display:none">Pause</button>
+    <span id="status-text">Start the microphone and sing</span>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       Tab 1: Immersive Mode
+  ══════════════════════════════════════ -->
+  <div class="tab-content active" id="tab-1">
+
+    <div id="immersive-wrap">
+      <canvas id="cv-immersive"></canvas>
+      <div id="feedback-msg"></div>
+      <div id="pitch-label">
+        —<span id="pitch-sub">Waiting for sound</span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Pitch</div>
+        <div class="stat-value" id="stat-pitch" style="color:#a78bfa">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Frequency</div>
+        <div class="stat-value" id="stat-hz" style="color:#378ADD">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Volume</div>
+        <div class="stat-value" id="stat-volume" style="color:#1D9E75">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pitch Stability</div>
+        <div class="stat-value" id="stat-stability">—</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       Tab 2: Vocal Zone Analysis
+  ══════════════════════════════════════ -->
+  <div class="tab-content" id="tab-2">
+
+    <canvas id="cv-space"></canvas>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Spectral Centroid</div>
+        <div class="stat-value" id="f2-centroid">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">RMS Energy</div>
+        <div class="stat-value" id="f2-rms">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">ZCR</div>
+        <div class="stat-value" id="f2-zcr">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Zone</div>
+        <div class="stat-value" id="f2-zone" style="font-size:12px">—</div>
+      </div>
+    </div>
+
+    <p class="space-note">
+      X axis = Brightness (Spectral Centroid) &nbsp;|&nbsp; Y axis = Energy (RMS)<br>
+      Zone coordinates are placeholder values. Run <code>ml/extract_and_umap.py</code> to replace with real data.
+    </p>
+
+  </div>
+
+  <!-- Scripts (order matters) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/immersive.js"></script>
+  <script src="js/space.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
