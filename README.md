@@ -31,6 +31,6 @@ SingnableLab/
 ```
 
 ```
-**Download VocalSet**
+Download VocalSet
 Download from https://zenodo.org/record/1193957.
 ```
