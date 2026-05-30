@@ -30,7 +30,12 @@ SingnableLab/
     └── extract_and_umap.py   # Python ML pipeline
 ```
 
+## Data
+This project uses the VocalSet dataset for the vocal zone analysis
 
-## Download VocalSet
-Download from https://zenodo.org/record/1193957.
+> Wilkins, J., Prem Seetharaman, Alison Wahl, & Bryan Pardo. (2018). 
+> VocalSet: A Singing Voice Dataset (1.0) [Data set]. Zenodo. 
+> https://doi.org/10.5281/zenodo.1193957
+
+**Download VocalSet**: Download from https://zenodo.org/record/1193957.
 
