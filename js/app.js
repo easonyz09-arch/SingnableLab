@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // app.js — Main Application Logic
-// Handles: initialization, tab switching, feedback system, main loop
+// Handles: init, tab switching, feedback, fullscreen, main loop
 // ─────────────────────────────────────────────
 
 const App = (() => {
@@ -10,7 +10,6 @@ const App = (() => {
   let fbTimer    = null;
   let paused     = false;
 
-  // Positive feedback rules: [condition(features, pitch, stability), message, cooldown ms]
   const FEEDBACK_RULES = [
     [(f, p, s) => s > 0.75 && f.rms > 0.03,              '◎ Great intonation!',   2500],
     [(f, p, s) => f.rms > 0.12 && p > 300,                '★ Powerful high note!', 3000],
@@ -26,12 +25,11 @@ const App = (() => {
         curTab = parseInt(btn.dataset.tab);
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
         document.querySelectorAll('.tab-content').forEach((el, i) => el.classList.toggle('active', i + 1 === curTab));
-        // Fix: re-render space canvas when switching tabs (hidden tab has offsetWidth = 0)
         if (curTab === 2) setTimeout(() => Space.resize(), 10);
       });
     });
 
-    // Start button
+    // Start microphone
     document.getElementById('mic-btn').addEventListener('click', async () => {
       const ok = await Audio.start();
       if (ok) {
@@ -45,15 +43,39 @@ const App = (() => {
       }
     });
 
-    // Pause / Resume button
+    // Pause / Resume
     document.getElementById('stop-btn').addEventListener('click', () => {
       paused = !paused;
-      document.getElementById('stop-btn').textContent     = paused ? 'Resume' : 'Pause';
-      document.getElementById('status-text').textContent  = paused ? 'Paused' : 'Analyzing in real-time — color follows pitch';
+      document.getElementById('stop-btn').textContent    = paused ? 'Resume' : 'Pause';
+      document.getElementById('status-text').textContent = paused ? 'Paused' : 'Analyzing in real-time — color follows pitch';
+    });
+
+    // Fullscreen toggle
+    document.getElementById('fs-btn').addEventListener('click', toggleFullscreen);
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFS = !!document.fullscreenElement;
+      document.body.classList.toggle('fs-mode', isFS);
+      document.getElementById('fs-btn').textContent = isFS ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+      // Give CSS time to apply new heights before resizing canvases
+      setTimeout(() => {
+        Immersive.resize();
+        Space.resize();
+      }, 80);
     });
 
     Immersive.init(document.getElementById('cv-immersive'));
     Space.init(document.getElementById('cv-space'));
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(e => {
+        console.warn('Fullscreen request failed:', e);
+      });
+    } else {
+      document.exitFullscreen();
+    }
   }
 
   function loop() {

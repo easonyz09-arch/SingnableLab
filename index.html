@@ -8,35 +8,30 @@
 </head>
 <body>
 
-  <!-- Header -->
   <div class="header">
     <span class="logo">SingnableLab</span>
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="1">✦ Immersive</button>
-      <button class="tab-btn"        data-tab="2">◎ Vocal Zones</button>
+    <div class="header-right">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="1">✦ Immersive</button>
+        <button class="tab-btn"        data-tab="2">◎ Vocal Zones</button>
+      </div>
+      <button id="fs-btn">⛶ Fullscreen</button>
     </div>
   </div>
 
-  <!-- Microphone controls -->
   <div class="mic-row">
     <button id="mic-btn">Start Microphone</button>
     <button id="stop-btn" style="display:none">Pause</button>
     <span id="status-text">Start the microphone and sing</span>
   </div>
 
-  <!-- ══════════════════════════════════════
-       Tab 1: Immersive Mode
-  ══════════════════════════════════════ -->
+  <!-- Tab 1: Immersive Mode -->
   <div class="tab-content active" id="tab-1">
-
     <div id="immersive-wrap">
       <canvas id="cv-immersive"></canvas>
       <div id="feedback-msg"></div>
-      <div id="pitch-label">
-        —<span id="pitch-sub">Waiting for sound</span>
-      </div>
+      <div id="pitch-label">—<span id="pitch-sub">Waiting for sound</span></div>
     </div>
-
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Pitch</div>
@@ -55,16 +50,11 @@
         <div class="stat-value" id="stat-stability">—</div>
       </div>
     </div>
-
   </div>
 
-  <!-- ══════════════════════════════════════
-       Tab 2: Vocal Zone Analysis
-  ══════════════════════════════════════ -->
+  <!-- Tab 2: Vocal Zone Analysis -->
   <div class="tab-content" id="tab-2">
-
     <canvas id="cv-space"></canvas>
-
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Spectral Centroid</div>
@@ -83,14 +73,11 @@
         <div class="stat-value" id="f2-zone" style="font-size:12px">—</div>
       </div>
     </div>
-
     <p class="space-note">
-      X axis = Brightness (Spectral Centroid) &nbsp;|&nbsp; Y axis = Energy (RMS)<br>
+      X axis = Brightness (Spectral Centroid) &nbsp;|&nbsp; Y axis = Energy (RMS)
     </p>
-
   </div>
 
-  <!-- Scripts (order matters) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/immersive.js"></script>
@@ -99,4 +86,3 @@
 
 </body>
 </html>
-
