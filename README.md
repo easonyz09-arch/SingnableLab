@@ -16,7 +16,7 @@ Real-time singing visualization tool that helps amateur singers improve emotiona
 ## Project Structure
 
 ```
-vocalab/
+SingnableLab/
 ├── index.html          # Page structure
 ├── style.css           # Styles
 ├── js/
@@ -32,5 +32,5 @@ vocalab/
 
 ```
 **Download VocalSet**
-Download from https://zenodo.org/record/1193957 and extract to `ml/VocalSet/`.
+Download from https://zenodo.org/record/1193957.
 ```
