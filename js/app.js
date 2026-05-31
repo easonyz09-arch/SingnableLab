@@ -57,11 +57,9 @@ const App = (() => {
       const isFS = !!document.fullscreenElement;
       document.body.classList.toggle('fs-mode', isFS);
       document.getElementById('fs-btn').textContent = isFS ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
-      // Give CSS time to apply new heights before resizing canvases
-      setTimeout(() => {
-        Immersive.resize();
-        Space.resize();
-      }, 80);
+      // Wait for CSS to apply, then resize canvases so Three.js fills the new dimensions
+      setTimeout(() => { Immersive.resize(); Space.resize(); }, 100);
+      setTimeout(() => { Immersive.resize(); Space.resize(); }, 400);
     });
 
     Immersive.init(document.getElementById('cv-immersive'));

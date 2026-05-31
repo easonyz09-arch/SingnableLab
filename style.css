@@ -205,7 +205,10 @@ body.fs-mode {
   background:  #04030d;
   color:       rgba(255,255,255,.85);
   padding:     14px 20px;
-  max-width:   100%;
+  max-width:   100vw;
+  width:       100vw;
+  margin-left: 0;
+  margin-right:0;
 }
 
 body.fs-mode .logo           { color: rgba(255,255,255,.8); }
@@ -221,6 +224,11 @@ body.fs-mode .stat-label     { color: rgba(255,255,255,.4); }
 body.fs-mode .stat-value     { color: rgba(255,255,255,.9); }
 body.fs-mode .space-note     { color: rgba(255,255,255,.3); }
 
-body.fs-mode #immersive-wrap,
-body.fs-mode #cv-immersive   { height: calc(100vh - 190px); }
-body.fs-mode #cv-space       { height: calc(100vh - 210px); }
+body.fs-mode #immersive-wrap {
+  height:        calc(100vh - 190px);
+  width:         100%;
+  border-radius: 0;
+  margin-bottom: 8px;
+}
+body.fs-mode #cv-immersive { height: calc(100vh - 190px); width: 100%; }
+body.fs-mode #cv-space     { height: calc(100vh - 210px); width: 100%; }

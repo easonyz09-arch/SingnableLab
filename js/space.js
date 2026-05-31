@@ -2,7 +2,6 @@
 // space.js — Vocal Zone Analysis Visualization
 // Handles: 2D feature space, real-time cursor, trail
 // Zone coordinates loaded from data/zones.json
-// (replaced with real UMAP output after running ml/extract_and_umap.py)
 // ─────────────────────────────────────────────
 
 const Space = (() => {
@@ -35,10 +34,10 @@ const Space = (() => {
 
   function resize() {
     // Fallback if canvas is hidden (offsetWidth = 0 when tab is not active)
-    const w = canvas.offsetWidth || canvas.parentElement?.offsetWidth || 700;
-    canvas.width        = w;
-    canvas.height       = 300;
-    canvas.style.height = '300px';
+    const w = canvas.offsetWidth  || canvas.parentElement?.offsetWidth  || 700;
+    const h = canvas.offsetHeight || 420;  // read from CSS, don't hardcode
+    canvas.width  = w;
+    canvas.height = h;
     drawStatic();
   }
 
