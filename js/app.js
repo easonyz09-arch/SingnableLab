@@ -1,6 +1,5 @@
 // ─────────────────────────────────────────────
 // app.js — Main Application Logic
-// Handles: init, tab switching, feedback, fullscreen, main loop
 // ─────────────────────────────────────────────
 
 const App = (() => {
@@ -9,6 +8,7 @@ const App = (() => {
   let lastFbTime = 0;
   let fbTimer    = null;
   let paused     = false;
+  let micStarted = false;
 
   const FEEDBACK_RULES = [
     [(f, p, s) => s > 0.75 && f.rms > 0.03,              '◎ Great intonation!',   2500],
@@ -29,35 +29,52 @@ const App = (() => {
       });
     });
 
-    // Start microphone
-    document.getElementById('mic-btn').addEventListener('click', async () => {
-      const ok = await Audio.start();
-      if (ok) {
-        paused = false;
-        document.getElementById('mic-btn').style.display  = 'none';
-        document.getElementById('stop-btn').style.display = 'inline-block';
-        document.getElementById('status-text').textContent = 'Analyzing in real-time — color follows pitch';
-        loop();
+    // Single mic button — toggles Start / Stop
+    const micBtn    = document.getElementById('mic-btn');
+    const statusEl  = document.getElementById('status-text');
+
+    micBtn.addEventListener('click', async () => {
+      if (!micStarted) {
+        // First start
+        const ok = await Audio.start();
+        if (ok) {
+          micStarted = true;
+          paused     = false;
+          micBtn.textContent = 'Stop';
+          micBtn.classList.add('live');
+          statusEl.textContent = 'Analyzing in real-time — color follows pitch';
+          loop();
+        } else {
+          statusEl.textContent = 'Could not access microphone. Check permissions.';
+        }
+      } else if (!paused) {
+        // Stop (pause)
+        paused               = true;
+        micBtn.textContent   = 'Start Microphone';
+        micBtn.classList.remove('live');
+        statusEl.textContent = 'Stopped';
       } else {
-        document.getElementById('status-text').textContent = 'Could not access microphone. Check permissions.';
+        // Resume
+        paused               = false;
+        micBtn.textContent   = 'Stop';
+        micBtn.classList.add('live');
+        statusEl.textContent = 'Analyzing in real-time — color follows pitch';
       }
     });
 
-    // Pause / Resume
-    document.getElementById('stop-btn').addEventListener('click', () => {
-      paused = !paused;
-      document.getElementById('stop-btn').textContent    = paused ? 'Resume' : 'Pause';
-      document.getElementById('status-text').textContent = paused ? 'Paused' : 'Analyzing in real-time — color follows pitch';
+    // Fullscreen toggle — requires mic to be started first
+    document.getElementById('fs-btn').addEventListener('click', () => {
+      if (!micStarted) {
+        document.getElementById('status-text').textContent = 'Start the microphone first, then enter fullscreen';
+        return;
+      }
+      toggleFullscreen();
     });
-
-    // Fullscreen toggle
-    document.getElementById('fs-btn').addEventListener('click', toggleFullscreen);
 
     document.addEventListener('fullscreenchange', () => {
       const isFS = !!document.fullscreenElement;
       document.body.classList.toggle('fs-mode', isFS);
       document.getElementById('fs-btn').textContent = isFS ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
-      // Wait for CSS to apply, then resize canvases so Three.js fills the new dimensions
       setTimeout(() => { Immersive.resize(); Space.resize(); }, 100);
       setTimeout(() => { Immersive.resize(); Space.resize(); }, 400);
     });
@@ -68,9 +85,7 @@ const App = (() => {
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(e => {
-        console.warn('Fullscreen request failed:', e);
-      });
+      document.documentElement.requestFullscreen().catch(e => console.warn(e));
     } else {
       document.exitFullscreen();
     }
