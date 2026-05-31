@@ -93,16 +93,35 @@ const App = (() => {
 
   function loop() {
     requestAnimationFrame(loop);
-    if (!Audio.isRunning() || paused) return;
+    if (!Audio.isRunning()) return;
     frameN++;
+
+    let features;
+    let pitch;
+
+    if (paused) {
+    features = {
+        rms: 0,
+        zcr: 0,
+        centroid: 0,
+        pitch: -1,
+        stability: 0
+    };
+    pitch = -1;
+    } else {
+    features = Audio.getFeatures();
+    pitch = Audio.smoothPitch(features.pitch);
+    }
 
     const features = Audio.getFeatures();
     const pitch    = Audio.smoothPitch(features.pitch);
-
+    
     if (curTab === 1) {
-      const { hue } = Immersive.draw(features, pitch);
-      updateImmersiveUI(features, pitch, hue);
-      triggerFeedback(features, pitch, features.stability, hue);
+        const { hue } = Immersive.draw(features, pitch);
+        if (!paused) {
+            updateImmersiveUI(features, pitch, hue);
+            triggerFeedback(features, pitch, features.stability, hue);
+        }
     } else {
       const nearZone = Space.draw(features);
       updateSpaceUI(features, nearZone);

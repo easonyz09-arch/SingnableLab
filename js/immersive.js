@@ -88,11 +88,12 @@ const Immersive = (() => {
   }
 
   function resize() {
-    const W = canvas.offsetWidth  || 700;
-    const H = canvas.offsetHeight || 480;
-    renderer.setSize(W, H);
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
+  const W = canvas.parentElement.clientWidth || window.innerWidth;
+  const H = canvas.parentElement.clientHeight || window.innerHeight;
+
+  renderer.setSize(W, H, false); // no need to cover css size
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
   }
 
   // Premium color mapping — amber (25°) → sapphire (260°), skips harsh greens

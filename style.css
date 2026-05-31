@@ -235,3 +235,17 @@ body.fs-mode #immersive-wrap {
 }
 body.fs-mode #cv-immersive { height: calc(100vh - 190px); width: 100%; }
 body.fs-mode #cv-space     { height: calc(100vh - 210px); width: 100%; }
+
+body.fs-mode #tab-1 {
+  width: 100vw;
+}
+
+body.fs-mode #immersive-wrap {
+  width: 100vw;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+body.fs-mode #cv-immersive {
+  width: 100vw;
+}
