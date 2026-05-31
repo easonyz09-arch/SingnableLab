@@ -19,64 +19,88 @@ const App = (() => {
   ];
 
   function init() {
-    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         curTab = parseInt(btn.dataset.tab);
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-        document.querySelectorAll('.tab-content').forEach((el, i) => el.classList.toggle('active', i + 1 === curTab));
-        if (curTab === 2) setTimeout(() => Space.resize(), 10);
+
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.toggle('active', b === btn);
+        });
+
+        document.querySelectorAll('.tab-content').forEach((el, i) => {
+          el.classList.toggle('active', i + 1 === curTab);
+        });
+
+        if (curTab === 2) {
+          setTimeout(() => Space.resize(), 10);
+        }
       });
     });
 
-    // Single mic button — toggles Start / Stop
-    const micBtn    = document.getElementById('mic-btn');
-    const statusEl  = document.getElementById('status-text');
+    const micBtn   = document.getElementById('mic-btn');
+    const statusEl = document.getElementById('status-text');
 
     micBtn.addEventListener('click', async () => {
       if (!micStarted) {
-        // First start
         const ok = await Audio.start();
+
         if (ok) {
           micStarted = true;
           paused     = false;
+
           micBtn.textContent = 'Stop';
           micBtn.classList.add('live');
           statusEl.textContent = 'Analyzing in real-time — color follows pitch';
+
           loop();
         } else {
           statusEl.textContent = 'Could not access microphone. Check permissions.';
         }
+
       } else if (!paused) {
-        // Stop (pause)
-        paused               = true;
-        micBtn.textContent   = 'Start Microphone';
+        paused = true;
+
+        micBtn.textContent = 'Start Microphone';
         micBtn.classList.remove('live');
         statusEl.textContent = 'Stopped';
+
+        resetImmersiveUI();
+
       } else {
-        // Resume
-        paused               = false;
-        micBtn.textContent   = 'Stop';
+        paused = false;
+
+        micBtn.textContent = 'Stop';
         micBtn.classList.add('live');
         statusEl.textContent = 'Analyzing in real-time — color follows pitch';
       }
     });
 
-    // Fullscreen toggle — requires mic to be started first
     document.getElementById('fs-btn').addEventListener('click', () => {
       if (!micStarted) {
-        document.getElementById('status-text').textContent = 'Start the microphone first, then enter fullscreen';
+        document.getElementById('status-text').textContent =
+          'Start the microphone first, then enter fullscreen';
         return;
       }
+
       toggleFullscreen();
     });
 
     document.addEventListener('fullscreenchange', () => {
       const isFS = !!document.fullscreenElement;
+
       document.body.classList.toggle('fs-mode', isFS);
-      document.getElementById('fs-btn').textContent = isFS ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
-      setTimeout(() => { Immersive.resize(); Space.resize(); }, 100);
-      setTimeout(() => { Immersive.resize(); Space.resize(); }, 400);
+      document.getElementById('fs-btn').textContent =
+        isFS ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+
+      setTimeout(() => {
+        Immersive.resize();
+        Space.resize();
+      }, 100);
+
+      setTimeout(() => {
+        Immersive.resize();
+        Space.resize();
+      }, 400);
     });
 
     Immersive.init(document.getElementById('cv-immersive'));
@@ -93,38 +117,43 @@ const App = (() => {
 
   function loop() {
     requestAnimationFrame(loop);
+
     if (!Audio.isRunning()) return;
+
     frameN++;
 
     let features;
     let pitch;
 
     if (paused) {
-    features = {
+      features = {
         rms: 0,
         zcr: 0,
         centroid: 0,
         pitch: -1,
         stability: 0
-    };
-    pitch = -1;
+      };
+
+      pitch = -1;
     } else {
-    features = Audio.getFeatures();
-    pitch = Audio.smoothPitch(features.pitch);
+      features = Audio.getFeatures();
+      pitch = Audio.smoothPitch(features.pitch);
     }
 
-    const features = Audio.getFeatures();
-    const pitch    = Audio.smoothPitch(features.pitch);
-    
     if (curTab === 1) {
-        const { hue } = Immersive.draw(features, pitch);
-        if (!paused) {
-            updateImmersiveUI(features, pitch, hue);
-            triggerFeedback(features, pitch, features.stability, hue);
-        }
+      const { hue } = Immersive.draw(features, pitch);
+
+      if (!paused) {
+        updateImmersiveUI(features, pitch, hue);
+        triggerFeedback(features, pitch, features.stability, hue);
+      }
+
     } else {
       const nearZone = Space.draw(features);
-      updateSpaceUI(features, nearZone);
+
+      if (!paused) {
+        updateSpaceUI(features, nearZone);
+      }
     }
   }
 
@@ -149,14 +178,46 @@ const App = (() => {
 
     const stability = f.stability || 0;
     const stabEl    = document.getElementById('stat-stability');
-    stabEl.textContent = stability > 0.7 ? 'Stable ◎' : stability > 0.4 ? 'Fair' : 'Unstable';
-    stabEl.style.color = stability > 0.7 ? '#1D9E75' : stability > 0.4 ? '#BA7517' : '#E24B4A';
+
+    stabEl.textContent =
+      stability > 0.7 ? 'Stable ◎' :
+      stability > 0.4 ? 'Fair' :
+      'Unstable';
+
+    stabEl.style.color =
+      stability > 0.7 ? '#1D9E75' :
+      stability > 0.4 ? '#BA7517' :
+      '#E24B4A';
   }
+
+  function resetImmersiveUI() {
+    const label = document.getElementById('pitch-label');
+    const sub   = document.getElementById('pitch-sub');
+
+    label.childNodes[0].textContent = '—';
+    label.style.color = 'rgba(255,255,255,0.4)';
+    sub.textContent = 'Waiting for sound';
+
+    document.getElementById('stat-pitch').textContent = '—';
+    document.getElementById('stat-hz').textContent = '—';
+    document.getElementById('stat-volume').textContent = '0%';
+
+    const stabEl = document.getElementById('stat-stability');
+    stabEl.textContent = '—';
+    stabEl.style.color = '#6b7280';
+
+    const fb = document.getElementById('feedback-msg');
+    fb.textContent = '';
+    fb.style.opacity = '0';
+
+    clearTimeout(fbTimer);
+    }
 
   function updateSpaceUI(f, nearZone) {
     document.getElementById('f2-centroid').textContent = (f.centroid * 1000).toFixed(1);
     document.getElementById('f2-rms').textContent      = (f.rms * 100).toFixed(2) + '%';
     document.getElementById('f2-zcr').textContent      = (f.zcr * 1000).toFixed(1);
+
     const zoneEl = document.getElementById('f2-zone');
     zoneEl.textContent = nearZone ? nearZone.name : '—';
     zoneEl.style.color = nearZone ? nearZone.color : 'var(--text-2)';
@@ -164,15 +225,22 @@ const App = (() => {
 
   function triggerFeedback(features, pitch, stability, hue) {
     const now = Date.now();
+
     for (const [cond, msg, cooldown] of FEEDBACK_RULES) {
       if (cond(features, pitch, stability) && now - lastFbTime > cooldown) {
         lastFbTime = now;
+
         const el = document.getElementById('feedback-msg');
         el.textContent   = msg;
         el.style.color   = `hsl(${hue}, 90%, 78%)`;
         el.style.opacity = '1';
+
         clearTimeout(fbTimer);
-        fbTimer = setTimeout(() => { el.style.opacity = '0'; }, 1700);
+
+        fbTimer = setTimeout(() => {
+          el.style.opacity = '0';
+        }, 1700);
+
         break;
       }
     }
