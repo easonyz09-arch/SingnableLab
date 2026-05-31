@@ -88,13 +88,15 @@ const Immersive = (() => {
   }
 
   function resize() {
-  const W = canvas.parentElement.clientWidth || window.innerWidth;
-  const H = canvas.parentElement.clientHeight || window.innerHeight;
+    const W = window.innerWidth;
+    const H = document.body.classList.contains('fs-mode')
+        ? window.innerHeight - 190
+        : 540;
 
-  renderer.setSize(W, H, false); // no need to cover css size
-  camera.aspect = W / H;
-  camera.updateProjectionMatrix();
-  }
+    renderer.setSize(W, H, false);
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    }
 
   // Premium color mapping — amber (25°) → sapphire (260°), skips harsh greens
   function pitchToHue(pitchNorm) {
